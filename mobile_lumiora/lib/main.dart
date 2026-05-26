@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screen/cart_screen.dart';
+import 'screens/cart_screen.dart';
 
 
 void main() { //add this
