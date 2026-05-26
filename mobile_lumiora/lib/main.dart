@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/cart_screen.dart';
 import 'screens/menu_screen.dart';
+import 'screens/splash_screen.dart';
 
 void main() { //add this
     runApp(MyApp());
@@ -11,9 +12,9 @@ class MyApp extends StatelessWidget{
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // UBAH initialRoute ke '/login' agar aplikasi tahu harus mulai dari mana
-      initialRoute: '/menu', 
+      initialRoute: '/splash', 
       routes: {
+        '/splash': (context) => const SplashScreen(),
         '/cart': (context) =>  CartScreen(),
         '/menu': (context) =>  MenuScreen(),
       },
