@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/cart_screen.dart';
-
+import 'screens/menu_screen.dart';
 
 void main() { //add this
     runApp(MyApp());
@@ -12,9 +12,10 @@ class MyApp extends StatelessWidget{
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       // UBAH initialRoute ke '/login' agar aplikasi tahu harus mulai dari mana
-      initialRoute: '/cart', 
+      initialRoute: '/menu', 
       routes: {
         '/cart': (context) =>  CartScreen(),
+        '/menu': (context) =>  MenuScreen(),
       },
     );
   }
