@@ -26,9 +26,9 @@ class _MenuScreenState extends State<MenuScreen> {
 
   final Map<String, GlobalKey> sectionKeys = {
     'Special Bundle': GlobalKey(),
-    'Latte Series': GlobalKey(),
-    'Classics Coffee': GlobalKey(),
-    'Non-Coffee': GlobalKey(),
+    'latte_series': GlobalKey(), // API Key
+    'classics': GlobalKey(),     // API Key
+    'non_coffee': GlobalKey(),   // API Key
     'Bundling Duo': GlobalKey(),
     'Bundling Trio': GlobalKey(),
     'Pastry & Bakery': GlobalKey(),
@@ -48,9 +48,9 @@ class _MenuScreenState extends State<MenuScreen> {
 
   final List<String> categoryTargets = [
     'Special Bundle',
-    'Latte Series',
-    'Classics Coffee',
-    'Non-Coffee',
+    'latte_series', // API Key
+    'classics',     // API Key
+    'non_coffee',   // API Key
     'Bundling Duo',
     'Bundling Trio',
     'Pastry & Bakery',
@@ -274,21 +274,21 @@ class _MenuScreenState extends State<MenuScreen> {
                           controller: menuScrollController,
                           padding: const EdgeInsets.fromLTRB(6, 8, 16, 16),
                           children: [
-                            ..._buildSection('Special Bundle'),
+                            ..._buildSection('Special Bundle', 'Special Bundle'),
                             const SizedBox(height: 10),
-                            ..._buildSection('Latte Series'),
+                            ..._buildSection('latte_series', 'Latte Series'),
                             const SizedBox(height: 10),
-                            ..._buildSection('Classics Coffee'),
+                            ..._buildSection('classics', 'Classics Coffee'),
                             const SizedBox(height: 10),
-                            ..._buildSection('Non-Coffee'),
+                            ..._buildSection('non_coffee', 'Non-Coffee'),
                             const SizedBox(height: 10),
-                            ..._buildSection('Bundling Duo'),
+                            ..._buildSection('Bundling Duo', 'Bundling Duo'),
                             const SizedBox(height: 10),
-                            ..._buildSection('Bundling Trio'),
+                            ..._buildSection('Bundling Trio', 'Bundling Trio'),
                             const SizedBox(height: 10),
-                            ..._buildSection('Pastry & Bakery'),
+                            ..._buildSection('Pastry & Bakery', 'Pastry & Bakery'),
                             const SizedBox(height: 10),
-                            ..._buildSection('Skewers'),
+                            ..._buildSection('Skewers', 'Skewers'),
                             const SizedBox(height: 96),
                           ],
                         ),
@@ -303,19 +303,19 @@ class _MenuScreenState extends State<MenuScreen> {
     );
   }
 
-  List<Widget> _buildSection(String title) {
-    // Replaced dummyMenu with our live menuItems
-    final items = menuItems.where((item) => item.category == title).toList();
+  List<Widget> _buildSection(String categoryKey, String displayTitle) {
+    // Search using the API key
+    final items = menuItems.where((item) => item.category == categoryKey).toList();
     if (items.isEmpty) {
       return [const SizedBox.shrink()];
     }
 
     return [
       Container(
-        key: sectionKeys[title],
+        key: sectionKeys[categoryKey],
         padding: const EdgeInsets.only(left: 8, bottom: 10),
         child: Text(
-          title,
+          displayTitle, // Show the pretty UI title
           style: const TextStyle(
             fontFamily: 'Montserrat',
             fontSize: 14,

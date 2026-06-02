@@ -17,13 +17,15 @@ class MenuItem {
 
   factory MenuItem.fromJson(Map<String, dynamic> json) {
     return MenuItem(
-      id: json['id']?.toString() ?? '',
-      name: json['name'] ?? '',
+      // The API sends an integer (1), so we safely convert it to a string
+      id: json['id']?.toString() ?? '', 
+      
+      // Look for the teacher's specific keys
+      name: json['item_name'] ?? 'Unknown Item', 
       description: json['description'] ?? '',
-      // Safely parse the string coming from the database into a double
-      price: double.tryParse(json['price'].toString()) ?? 0.0, 
-      category: json['category'] ?? '',
-      imagePlaceholder: json['imagePlaceholder'] ?? 'assets/images/placeholder_1.png',
+      price: double.tryParse(json['price'].toString()) ?? 0.0,
+      category: json['category_name'] ?? 'Uncategorized', 
+      imagePlaceholder: json['image_url'] ?? 'assets/images/placeholder_1.png',
     );
   }
 }

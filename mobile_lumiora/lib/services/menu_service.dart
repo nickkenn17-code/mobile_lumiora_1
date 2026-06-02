@@ -3,19 +3,35 @@ import 'package:http/http.dart' as http;
 import '../models/menu_item.dart';
 
 class MenuService {
-  // Remember: 10.0.2.2 is for Android Emulator. Use localhost for iOS/Web.
-  static const String apiUrl = 'http://localhost:3000/api/menu';
+  // Pointing to your teacher's live cloud server
+  static const String apiUrl = 'http://43.133.144.212:1234/api/menu';
 
   static Future<List<MenuItem>> fetchMenuItems() async {
     try {
       final response = await http.get(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {
-        // Decode the live JSON from your Node.js API
-        List<dynamic> jsonResponse = json.decode(response.body);
+        // 1. Decode the response into a dynamic variable
+        final dynamic decodedResponse = json.decode(response.body);
         
-        // Map it into our Dart objects
-        return jsonResponse.map((data) => MenuItem.fromJson(data)).toList();
+        List<dynamic> jsonList;
+
+        // 2. Check the structure: is it a Map (Object) or a List (Array)?
+        if (decodedResponse is Map<String, dynamic>) {
+          // If it is a Map, extract the array hiding inside the 'data' key
+          jsonList = decodedResponse['data'] ?? 
+                     decodedResponse['items'] ?? 
+                     decodedResponse['menu'] ?? 
+                     [];
+        } else if (decodedResponse is List) {
+          // If it's already a raw list, use it directly
+          jsonList = decodedResponse;
+        } else {
+          throw Exception('Unexpected JSON format');
+        }
+
+        // 3. Map the extracted list into your Dart objects
+        return jsonList.map((data) => MenuItem.fromJson(data)).toList();
       } else {
         // If the server connects but throws an error (like a 404 or 500)
         throw Exception('Server error: ${response.statusCode}');
