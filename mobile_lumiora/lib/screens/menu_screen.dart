@@ -556,7 +556,7 @@ class _MenuScreenState extends State<MenuScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    Row(
+                    Row(  
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
