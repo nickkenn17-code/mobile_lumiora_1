@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/menu_item.dart';
 import '../services/cart_service.dart';
 import '../services/menu_service.dart'; // We import our new fetcher
+import 'checkout_screen.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -651,19 +652,40 @@ class _MenuScreenState extends State<MenuScreen> {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF9A7B4F),
-                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF9A7B4F),
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                              ),
+                              onPressed: () {
+                                // 1. Add the customized item to the cart
+                                CartService.addToCart(
+                                  item,
+                                  qty: quantity,
+                                  iceLevel: selectedIce,
+                                  sugarLevel: selectedSugar,
+                                  coffeeStrength: selectedStrength,
+                                );
+
+                                // 2. Grab the item we just added
+                                final itemToCheckOut = CartService.cart.last;
+
+                                // 3. Close the bottom modal sheet
+                                Navigator.pop(context);
+
+                                // 4. Navigate directly to the Checkout screen with this item
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CheckoutScreen(
+                                      selectedItems: [itemToCheckOut],
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: const Text('CHECK OUT', style: TextStyle(color: Colors.white)),
                             ),
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Checkout will be available later.')),
-                              );
-                            },
-                            child: const Text('CHECK OUT', style: TextStyle(color: Colors.white)),
                           ),
-                        ),
                       ],
                     )
                   ],
