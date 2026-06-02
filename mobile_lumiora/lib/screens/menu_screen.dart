@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/menu_item.dart';
 import '../services/cart_service.dart';
+import '../services/menu_service.dart'; // We import our new fetcher
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -11,6 +12,11 @@ class MenuScreen extends StatefulWidget {
 
 class _MenuScreenState extends State<MenuScreen> {
   int selectedCategoryIndex = 1; // Defaulting to 'Latte Series'
+  
+  // STEP 4: State variables to hold the live data and track loading
+  List<MenuItem> menuItems = []; 
+  bool isLoading = true; 
+
   final ScrollController menuScrollController = ScrollController();
   final Color pageBg = const Color(0xFFF2EEE6);
   final Color olive = const Color(0xFFA3B04A);
@@ -49,6 +55,33 @@ class _MenuScreenState extends State<MenuScreen> {
     'Pastry & Bakery',
     'Skewers',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMenuData(); // Trigger the fetch when screen opens
+  }
+
+  // Function to actually fetch the data from our new service
+  Future<void> _loadMenuData() async {
+    try {
+      final items = await MenuService.fetchMenuItems();
+      if (mounted) {
+        setState(() {
+          menuItems = items;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      // If the network fails, fallback to dummy data so the app doesn't crash
+      if (mounted) {
+        setState(() {
+          menuItems = dummyMenu;
+          isLoading = false;
+        });
+      }
+    }
+  }
 
   // Function to trigger the bottom sheet (Item Properties Modal)
   void _showItemModal(BuildContext context, MenuItem item) {
@@ -116,7 +149,8 @@ class _MenuScreenState extends State<MenuScreen> {
         return offset;
       }
 
-      final itemCount = dummyMenu.where((item) => item.category == target).length;
+      // Replaced dummyMenu with our live menuItems
+      final itemCount = menuItems.where((item) => item.category == target).length;
       if (itemCount == 0) {
         continue;
       }
@@ -230,28 +264,31 @@ class _MenuScreenState extends State<MenuScreen> {
                     ),
                   ),
                   Expanded(
-                    child: ListView(
-                      controller: menuScrollController,
-                      padding: const EdgeInsets.fromLTRB(6, 8, 16, 16),
-                      children: [
-                        ..._buildSection('Special Bundle'),
-                        const SizedBox(height: 10),
-                        ..._buildSection('Latte Series'),
-                        const SizedBox(height: 10),
-                        ..._buildSection('Classics Coffee'),
-                        const SizedBox(height: 10),
-                        ..._buildSection('Non-Coffee'),
-                        const SizedBox(height: 10),
-                        ..._buildSection('Bundling Duo'),
-                        const SizedBox(height: 10),
-                        ..._buildSection('Bundling Trio'),
-                        const SizedBox(height: 10),
-                        ..._buildSection('Pastry & Bakery'),
-                        const SizedBox(height: 10),
-                        ..._buildSection('Skewers'),
-                        const SizedBox(height: 96),
-                      ],
-                    ),
+                    // Show a loading spinner while fetching data from the API
+                    child: isLoading 
+                      ? Center(child: CircularProgressIndicator(color: oliveDark))
+                      : ListView(
+                          controller: menuScrollController,
+                          padding: const EdgeInsets.fromLTRB(6, 8, 16, 16),
+                          children: [
+                            ..._buildSection('Special Bundle'),
+                            const SizedBox(height: 10),
+                            ..._buildSection('Latte Series'),
+                            const SizedBox(height: 10),
+                            ..._buildSection('Classics Coffee'),
+                            const SizedBox(height: 10),
+                            ..._buildSection('Non-Coffee'),
+                            const SizedBox(height: 10),
+                            ..._buildSection('Bundling Duo'),
+                            const SizedBox(height: 10),
+                            ..._buildSection('Bundling Trio'),
+                            const SizedBox(height: 10),
+                            ..._buildSection('Pastry & Bakery'),
+                            const SizedBox(height: 10),
+                            ..._buildSection('Skewers'),
+                            const SizedBox(height: 96),
+                          ],
+                        ),
                   ),
                 ],
               ),
@@ -264,7 +301,8 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   List<Widget> _buildSection(String title) {
-    final items = dummyMenu.where((item) => item.category == title).toList();
+    // Replaced dummyMenu with our live menuItems
+    final items = menuItems.where((item) => item.category == title).toList();
     if (items.isEmpty) {
       return [const SizedBox.shrink()];
     }
@@ -464,7 +502,6 @@ class _MenuScreenState extends State<MenuScreen> {
     );
   }
 
-  // THE OVERLAY: Item Properties Modal
   Widget _buildItemPropertiesSheet(BuildContext context, MenuItem item) {
     String selectedIce = 'Hot';
     String selectedSugar = 'No Sugar';
