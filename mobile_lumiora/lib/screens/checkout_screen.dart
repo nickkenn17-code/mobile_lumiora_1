@@ -623,7 +623,7 @@ class QRPaymentScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/qr.png', width: 200, height: 200),
+            Image.asset('lib/assets/qr.png', width: 200, height: 200),
             const SizedBox(height: 20),
             const Text(
               'Scan this QR to pay',
