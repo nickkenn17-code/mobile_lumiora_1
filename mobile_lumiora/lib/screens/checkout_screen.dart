@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/cart_service.dart';
 
+
 class CheckoutScreen extends StatefulWidget {
   final List<CartItem> selectedItems;
   
@@ -622,7 +623,7 @@ class QRPaymentScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.qr_code_2, size: 200, color: Colors.black87),
+            Image.asset('assets/qr.png', width: 200, height: 200),
             const SizedBox(height: 20),
             const Text(
               'Scan this QR to pay',
