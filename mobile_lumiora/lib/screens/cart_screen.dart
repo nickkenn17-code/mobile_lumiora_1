@@ -17,10 +17,11 @@ class _CartScreenState extends State<CartScreen> {
   final Color oliveDark = const Color(0xFF8D9937);
   final Set<String> selectedItemIds = {};
 
-  void _syncSelection(List<CartItem> cart) {
-    final ids = cart.map((item) => item.item.id).toSet();
-    selectedItemIds.removeWhere((id) => !ids.contains(id));
-    for (final item in cart) {
+  @override
+  void initState() {
+    super.initState();
+    // Select all items by default ONLY when the screen first loads
+    for (final item in CartService.cart) {
       selectedItemIds.add(item.item.id);
     }
   }
@@ -57,7 +58,7 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final cart = CartService.cart;
-    _syncSelection(cart);
+    // _syncSelection(cart);
 
     return Scaffold(
       backgroundColor: pageBg,
@@ -272,7 +273,7 @@ class _CartScreenState extends State<CartScreen> {
                     _qtyButton(Icons.remove, () {
                       setState(() {
                         CartService.decreaseQty(index);
-                        _syncSelection(CartService.cart);
+
                       });
                     }),
                     Padding(
@@ -317,8 +318,12 @@ class _CartScreenState extends State<CartScreen> {
             icon: const Icon(Icons.delete_outline, color: Color(0xFF777777)),
             onPressed: () {
               setState(() {
-                CartService.removeItem(index);
-                _syncSelection(CartService.cart);
+                // 1. Uncheck the item
+                selectedItemIds.remove(item.item.id); 
+                
+                // 2. Remove it from the cart
+                CartService.removeItem(index); 
+                
               });
             },
           ),
