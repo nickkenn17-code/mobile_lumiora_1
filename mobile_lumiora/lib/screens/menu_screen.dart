@@ -73,12 +73,14 @@ class _MenuScreenState extends State<MenuScreen> {
         });
       }
     } catch (e) {
-      // If the network fails, fallback to dummy data so the app doesn't crash
       if (mounted) {
         setState(() {
-          menuItems = dummyMenu;
           isLoading = false;
         });
+        // Show an error message on the screen if the DB fails
+        ScaffoldMessenger.of(context).showSnackBar(
+           SnackBar(content: Text('Database Error: $e')),
+        );
       }
     }
   }

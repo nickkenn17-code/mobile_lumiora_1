@@ -15,44 +15,15 @@ class MenuItem {
     required this.imagePlaceholder,
   });
 
-  // STEP 1: The Translator. This converts PostgreSQL JSON into a MenuItem.
   factory MenuItem.fromJson(Map<String, dynamic> json) {
     return MenuItem(
       id: json['id']?.toString() ?? '',
       name: json['name'] ?? '',
       description: json['description'] ?? '',
-      // Safely parse the price whether the database sends an integer or double
-      price: (json['price'] ?? 0).toDouble(), 
+      // Safely parse the string coming from the database into a double
+      price: double.tryParse(json['price'].toString()) ?? 0.0, 
       category: json['category'] ?? '',
       imagePlaceholder: json['imagePlaceholder'] ?? 'assets/images/placeholder_1.png',
     );
   }
 }
-
-// Keep the dummy data temporarily so your app still runs while we build the rest.
-final List<MenuItem> dummyMenu = [
-  MenuItem(
-    id: 'm1',
-    name: 'Special Bundle',
-    description: 'A set of featured drinks and snacks.',
-    price: 90000,
-    category: 'Special Bundle',
-    imagePlaceholder: 'assets/images/placeholder_1.png',
-  ),
-  MenuItem(
-    id: 'm3',
-    name: 'Latte',
-    description: 'Smooth espresso with steamed milk.',
-    price: 21000,
-    category: 'Latte Series',
-    imagePlaceholder: 'assets/images/placeholder_3.png',
-  ),
-  MenuItem(
-    id: 'm5',
-    name: 'Macchiato',
-    description: 'Bold espresso layered over milk.',
-    price: 23000,
-    category: 'Classics Coffee',
-    imagePlaceholder: 'assets/images/placeholder_2.png',
-  ),
-];

@@ -15,7 +15,7 @@ const pool = new Pool({
   user: 'postgres',       // Your default PostgreSQL username
   host: 'localhost',
   database: 'lumiora_db', // The name of the database where you ran the SQL script
-  password: 'your_password_here', // Your PostgreSQL password
+  password: '123', // Your PostgreSQL password
   port: 5432,
 });
 

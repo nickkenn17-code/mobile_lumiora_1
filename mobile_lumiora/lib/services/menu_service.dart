@@ -3,9 +3,8 @@ import 'package:http/http.dart' as http;
 import '../models/menu_item.dart';
 
 class MenuService {
-  // If using Android Emulator, use 10.0.2.2. 
-  // If using iOS Simulator or Web, use localhost.
-  static const String apiUrl = 'http://10.0.2.2:3000/api/menu'; 
+  // Remember: 10.0.2.2 is for Android Emulator. Use localhost for iOS/Web.
+  static const String apiUrl = 'http://localhost:3000/api/menu';
 
   static Future<List<MenuItem>> fetchMenuItems() async {
     try {
@@ -18,12 +17,12 @@ class MenuService {
         // Map it into our Dart objects
         return jsonResponse.map((data) => MenuItem.fromJson(data)).toList();
       } else {
-        throw Exception('Server responded with status code: ${response.statusCode}');
+        // If the server connects but throws an error (like a 404 or 500)
+        throw Exception('Server error: ${response.statusCode}');
       }
     } catch (e) {
-      print('Network error: $e');
-      // If it fails, fallback to the dummy data so the UI doesn't break
-      return dummyMenu; 
+      // If the app cannot reach the server at all, throw an error to the UI
+      throw Exception('Failed to connect to the database API: $e');
     }
   }
 }
