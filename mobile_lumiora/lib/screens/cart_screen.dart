@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/cart_service.dart';
+import 'checkout_screen.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -33,9 +34,23 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
-  void _showCheckoutMessage() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Checkout flow is not set up yet.')),
+  void _navigateToCheckout() {
+    final selectedCartItems = CartService.cart
+        .where((item) => selectedItemIds.contains(item.item.id))
+        .toList();
+
+    if (selectedCartItems.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select at least one item to checkout.')),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CheckoutScreen(selectedItems: selectedCartItems),
+      ),
     );
   }
 
@@ -386,7 +401,7 @@ class _CartScreenState extends State<CartScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: cart.isEmpty ? null : _showCheckoutMessage,
+                  onPressed: cart.isEmpty ? null : _navigateToCheckout,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: olive,
                     foregroundColor: Colors.white,
