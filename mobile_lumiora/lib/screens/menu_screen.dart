@@ -3,6 +3,7 @@ import '../models/menu_item.dart';
 import '../services/cart_service.dart';
 import '../services/menu_service.dart'; // We import our new fetcher
 import 'checkout_screen.dart';
+import 'history_screen.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -450,11 +451,24 @@ class _MenuScreenState extends State<MenuScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _navItem(Icons.home_outlined, 'Home', false),
-                _navItem(Icons.coffee_outlined, 'Menu', true),
+                _navItem(Icons.home_outlined, 'Home', false, () {
+                  // Go back to the very first screen (Splash/Home)
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                }),
+                _navItem(Icons.coffee_outlined, 'Menu', true, () {
+                  // We are already on the Menu screen, so do nothing
+                }),
                 const SizedBox(width: 64),
-                _navItem(Icons.receipt_long_outlined, 'History', false),
-                _navItem(Icons.person_outline, 'Profile', false),
+                _navItem(Icons.receipt_long_outlined, 'History', false, () {
+                  // Navigate to the History screen!
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HistoryScreen()),
+                  );
+                }),
+                _navItem(Icons.person_outline, 'Profile', false, () {
+                  // Profile is not built yet
+                }),
               ],
             ),
             Positioned(
@@ -487,21 +501,24 @@ class _MenuScreenState extends State<MenuScreen> {
     );
   }
 
-  Widget _navItem(IconData icon, String label, bool active) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, size: 22, color: active ? oliveDark : const Color(0xFF7C7C7C)),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 9,
-            fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-            color: active ? oliveDark : const Color(0xFF7C7C7C),
+  Widget _navItem(IconData icon, String label, bool active, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap, // <--- This registers the user's click
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 22, color: active ? oliveDark : const Color(0xFF7C7C7C)),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 9,
+              fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+              color: active ? oliveDark : const Color(0xFF7C7C7C),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

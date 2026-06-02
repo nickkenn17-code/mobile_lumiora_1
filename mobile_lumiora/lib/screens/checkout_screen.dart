@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/cart_service.dart';
-
+import '../services/history_service.dart';
+import 'history_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final List<CartItem> selectedItems;
@@ -47,7 +48,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void _removeItem(CartItem item) {
     setState(() {
       _itemsToCheckout.remove(item);
-      // Optional: remove from CartService as well
       CartService.cart.remove(item);
     });
   }
@@ -65,7 +65,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   double _getTotal() {
-    return _getSubtotal() + _getTaxAndService(); // Minus discounts if any
+    return _getSubtotal() + _getTaxAndService(); 
   }
 
   void _processCheckout() async {
@@ -80,10 +80,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       setState(() {
         _isLoading = false;
       });
-      // Navigate to QR payment screen
+      // Navigate to QR payment screen and pass the items
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const QRPaymentScreen()),
+        MaterialPageRoute(
+          builder: (context) => QRPaymentScreen(purchasedItems: _itemsToCheckout),
+        ),
       );
     }
   }
@@ -137,7 +139,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     _buildPaymentMethod(),
                     const SizedBox(height: 16),
                     _buildPaymentBreakdown(),
-                    const SizedBox(height: 100), // padding for checkout button
+                    const SizedBox(height: 100), 
                   ],
                 ),
                 Positioned(
@@ -607,7 +609,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 }
 
 class QRPaymentScreen extends StatelessWidget {
-  const QRPaymentScreen({Key? key}) : super(key: key);
+  final List<CartItem> purchasedItems; // Receive items from Checkout
+
+  const QRPaymentScreen({Key? key, required this.purchasedItems}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -632,8 +636,19 @@ class QRPaymentScreen extends StatelessWidget {
             const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
-                // Return to home or something
-                Navigator.of(context).popUntil((route) => route.isFirst);
+                // 1. Log the purchased items into the History Service
+                HistoryService.recordOrder(purchasedItems);
+
+                // 2. Safely clear these items from the main Cart
+                for (var item in purchasedItems) {
+                  CartService.cart.remove(item);
+                }
+
+                // 3. Clear the navigation stack and go to the History Screen
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const HistoryScreen()),
+                  (route) => route.isFirst, // Keeps your "Home" screen at the bottom
+                );
               },
               child: const Text('Simulate Payment Success'),
             )
