@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/menu_item.dart';
 import '../services/cart_service.dart';
-import '../services/menu_service.dart'; // We import our new fetcher
+import '../services/menu_service.dart';
+import '../services/auth_service.dart';
+import '../widgets/login_modal.dart';
 import 'checkout_screen.dart';
 import 'history_screen.dart';
 
@@ -95,6 +97,27 @@ class _MenuScreenState extends State<MenuScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => _buildItemPropertiesSheet(context, item),
     );
+  }
+
+  void _checkAuthAndAddItem(MenuItem item) {
+    final authService = AuthService();
+    if (!authService.isLoggedIn) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (context) => LoginModal(
+          onLoginSuccess: () {
+            _showItemModal(context, item);
+          },
+        ),
+      );
+    } else {
+      _showItemModal(context, item);
+    }
   }
 
   @override
@@ -331,7 +354,7 @@ class _MenuScreenState extends State<MenuScreen> {
 
   Widget _buildItemCard(MenuItem item) {
     return GestureDetector(
-      onTap: () => _showItemModal(context, item),
+      onTap: () => _checkAuthAndAddItem(item),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12.0, left: 8),
         decoration: BoxDecoration(
@@ -414,10 +437,30 @@ class _MenuScreenState extends State<MenuScreen> {
                         const SizedBox(width: 6),
                         InkWell(
                           onTap: () {
-                            CartService.addToCart(item);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('${item.name} added to cart')),
-                            );
+                            final authService = AuthService();
+                            if (!authService.isLoggedIn) {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.white,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                                ),
+                                builder: (context) => LoginModal(
+                                  onLoginSuccess: () {
+                                    CartService.addToCart(item);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('${item.name} added to cart')),
+                                    );
+                                  },
+                                ),
+                              );
+                            } else {
+                              CartService.addToCart(item);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('${item.name} added to cart')),
+                              );
+                            }
                           },
                           child: const Padding(
                             padding: EdgeInsets.only(top: 2),
