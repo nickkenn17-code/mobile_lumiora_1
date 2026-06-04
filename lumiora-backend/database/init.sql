@@ -26,3 +26,16 @@ INSERT INTO menu_items (id, name, description, price, category, "imagePlaceholde
 ('m14', 'Espresso', 'Single shot of espresso', 15000, 'Classics Coffee', 'assets/images/placeholder_2.png'),
 ('m15', 'Split', 'Double shot, split pour', 26000, 'Classics Coffee', 'assets/images/placeholder_2.png'),
 ('m16', 'Double Shot', 'Two shots of espresso', 18000, 'Classics Coffee', 'assets/images/placeholder_2.png');
+
+
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    phone VARCHAR(20) NOT NULL
+);
+
+TRUNCATE TABLE users;
+
+-- just dummy data LOL
+INSERT INTO users (username, password, phone) VALUES ('user', 'password123', '12345678');

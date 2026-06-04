@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/cart_screen.dart';
 import 'screens/menu_screen.dart';
 import 'screens/splash_screen.dart';
+import 'screens/login_screen.dart';
 
 void main() { //add this
     runApp(MyApp());
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget{
       initialRoute: '/splash', 
       routes: {
         '/splash': (context) => const SplashScreen(),
+        '/login': (context) => const LoginScreen(),
         '/cart': (context) =>  CartScreen(),
         '/menu': (context) =>  MenuScreen(),
       },

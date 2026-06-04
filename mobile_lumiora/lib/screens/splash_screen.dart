@@ -20,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
         return;
       }
 
-      Navigator.pushReplacementNamed(context, '/menu');
+      Navigator.pushReplacementNamed(context, '/login');
     });
   }
 

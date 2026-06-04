@@ -1,6 +1,7 @@
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const port = 3000;
@@ -37,4 +38,46 @@ app.get('/api/menu', async (req, res) => {
 // Start the server
 app.listen(port, () => {
   console.log(`Lumiora API is online and running at http://localhost:${port}`);
+});
+
+// Simple login endpoint
+app.post('/api/login', async (req, res) => {
+  const { username, phone, password } = req.body;
+  if (!username || !password || !phone) {
+    return res.status(400).json({ success: false, message: 'Missing username, phone number, or password' });
+  }
+
+  try {
+    const result = await pool.query('SELECT password, phone FROM users WHERE username = $1', [username]);
+    if (result.rows.length === 0) {
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+
+    const stored = result.rows[0].password;
+
+    // If stored value looks like a bcrypt hash, use bcrypt.compare
+    if (typeof stored === 'string' && stored.startsWith('$2')) {
+      const match = await bcrypt.compare(password, stored);
+      if (match) return res.json({ success: true, phone });
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+
+    // Otherwise, fallback to plain-text comparison (demo only)
+    if (password === stored) {
+      return res.json({ success: true });
+    }
+
+    // Also allow SHA256 hex match if stored is 64-char hex
+    const isHex64 = typeof stored === 'string' && /^[a-f0-9]{64}$/.test(stored);
+    if (isHex64) {
+      const crypto = require('crypto');
+      const hash = crypto.createHash('sha256').update(password).digest('hex');
+      if (hash === stored) return res.json({ success: true });
+    }
+
+    return res.status(401).json({ success: false, message: 'Invalid credentials' });
+  } catch (error) {
+    console.error('Login error', error);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
 });
