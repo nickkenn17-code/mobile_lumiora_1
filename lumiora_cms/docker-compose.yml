@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # Django CMS Application
+  web:
+    build: .
+    ports:
+      - "8001:8000"
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-lumiora-cms-docker-dev-key
+      - DB_NAME=lumiora_db
+      - DB_USER=lumiora_user
+      - DB_PASSWORD=lumiora_secure_password_123
+      - DB_HOST=db
+      - DB_PORT=5432
+      - ALLOWED_HOSTS=localhost,127.0.0.1,web,0.0.0.0
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./:/app
+    networks:
+      - lumiora_network
+
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=lumiora_db
+      - POSTGRES_USER=lumiora_user
+      - POSTGRES_PASSWORD=lumiora_secure_password_123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - lumiora_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lumiora_user -d lumiora_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
+networks:
+  lumiora_network:
+    driver: bridge
