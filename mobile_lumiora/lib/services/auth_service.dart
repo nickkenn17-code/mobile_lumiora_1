@@ -22,7 +22,7 @@ class AuthService {
   /// Attempt to log in with username, phone, and password
   Future<bool> login(String username, String phone, String password) async {
     try {
-      final apiHost = kIsWeb ? 'localhost' : '10.0.2.2';
+      const String apiHost = '35.254.206.12';
       final uri = Uri.parse('http://$apiHost:3000/api/login');
       final resp = await http.post(
         uri,

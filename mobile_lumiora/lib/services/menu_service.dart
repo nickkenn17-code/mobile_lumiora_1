@@ -3,8 +3,8 @@ import 'package:http/http.dart' as http;
 import '../models/menu_item.dart';
 
 class MenuService {
-  // Pointing to your teacher's live cloud server
-  static const String apiUrl = 'http://43.133.144.212:1234/api/menu';
+  // Pointing to the deployed cloud backend
+  static const String apiUrl = 'http://35.254.206.12:3000/api/menu';
 
   static Future<List<MenuItem>> fetchMenuItems() async {
     try {
