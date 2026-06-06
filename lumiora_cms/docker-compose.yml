@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Django CMS Application
   web:
@@ -18,8 +16,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ./:/app
     networks:
       - lumiora_network
 
