@@ -14,7 +14,7 @@ app.use(express.json());
 // Replace these values with your actual PostgreSQL credentials
 const pool = new Pool({
   user: 'postgres',       // Your default PostgreSQL username
-  host: 'localhost',
+  host: 'postgres',       // Docker service name for the postgres container
   database: 'lumiora_db', // The name of the database where you ran the SQL script
   password: '123', // Your PostgreSQL password
   port: 5432,
