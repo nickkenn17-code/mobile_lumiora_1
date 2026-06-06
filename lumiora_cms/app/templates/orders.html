@@ -3,12 +3,80 @@
 <head>
     <title>Kitchen Display - Lumiora</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f4f6f8; }
-        .tab-section { margin-bottom: 20px; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin-right: 5px; }
-        .tab-content { display: none; background: white; padding: 20px; border: 1px solid #ccc; }
-        .active { display: block; }
-        .order-card { border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
+        /* Warna background dan font dasar */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 40px; 
+            background-color: #f8f9f5; 
+            color: #333;
+        }
+
+        .tab-section { 
+            margin-bottom: 20px; 
+        }
+
+        /* Tombol tab di bagian atas */
+        .tab-section button { 
+            background-color: white;
+            color: #333;
+            border: 1px solid #dcdcdc;
+            border-radius: 6px;
+            padding: 10px 20px; 
+            font-size: 16px; 
+            font-weight: bold;
+            cursor: pointer; 
+            margin-right: 10px; 
+            transition: all 0.2s;
+        }
+
+        .tab-section button:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Kotak konten utama */
+        .tab-content { 
+            display: none; 
+            background: white; 
+            padding: 25px; 
+            border: none; 
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .active { 
+            display: block; 
+        }
+
+        /* Pemisah antar pesanan */
+        .order-card { 
+            border-bottom: 1px solid #f0f0f0; 
+            padding-bottom: 15px; 
+            margin-bottom: 15px; 
+            line-height: 1.5;
+        }
+
+        .order-card:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        /* Tombol Mark Complete (Sage Green) */
+        .btn-complete {
+            background-color: #7e8e73;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-complete:hover {
+            background-color: #6a7a60;
+        }
     </style>
 </head>
 <body>
@@ -26,7 +94,7 @@
         <div class="order-card">
             <strong>Order #104</strong> <br>
             2x Iced Caramel Macchiato <br>
-            <button style="margin-top: 10px;">Mark Complete</button>
+            <button class="btn-complete" onclick="selesaikanPesanan(this)">Mark Complete</button>
         </div>
     </div>
 
@@ -42,13 +110,21 @@
 
     <script>
         function showTab(tabId) {
-            // Hide all tabs
+            // Sembunyikan semua tab
             var tabs = document.getElementsByClassName('tab-content');
             for (var i = 0; i < tabs.length; i++) {
                 tabs[i].classList.remove('active');
             }
-            // Show the clicked tab
+            // Tampilkan tab yang diklik
             document.getElementById(tabId).classList.add('active');
+        }
+
+        function selesaikanPesanan(elemenTombol) {
+            // Cari kotak pesanan (order-card) yang membungkus tombol ini
+            var kotakPesanan = elemenTombol.closest('.order-card');
+            
+            // Sembunyikan kotaknya dari layar
+            kotakPesanan.style.display = 'none';
         }
     </script>
 
