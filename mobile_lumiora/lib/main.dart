@@ -3,6 +3,8 @@ import 'screens/cart_screen.dart';
 import 'screens/menu_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/history_screen.dart';
 
 void main() { //add this
     runApp(MyApp());
@@ -18,6 +20,8 @@ class MyApp extends StatelessWidget{
         '/splash': (context) => const SplashScreen(),
         '/cart': (context) =>  CartScreen(),
         '/menu': (context) =>  MenuScreen(),
+        '/profile': (context) => const ProfileScreen(),
+        '/history': (context) => const HistoryScreen(),
       },
     );
   }

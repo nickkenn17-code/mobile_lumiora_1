@@ -40,7 +40,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       padding: const EdgeInsets.all(16),
                       itemCount: orders.length,
                       itemBuilder: (context, index) {
-                        return _buildOrderCard(orders[index]);
+                        // Memanggil custom widget yang bisa di-expand
+                        return _OrderCard(order: orders[index]);
                       },
                     ),
             ),
@@ -86,96 +87,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  Widget _buildOrderCard(OrderRecord order) {
-    // Format the date simply (e.g., 2026-06-02)
-    final dateStr = "${order.date.year}-${order.date.month.toString().padLeft(2, '0')}-${order.date.day.toString().padLeft(2, '0')}";
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF7F3EA),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: cardBorder.withOpacity(0.9)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Order #${order.orderId}',
-                style: const TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF262626),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: olive.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  order.status,
-                  style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontSize: 9,
-                    fontWeight: FontWeight.w700,
-                    color: oliveDark,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            dateStr,
-            style: TextStyle(
-              fontFamily: 'Montserrat',
-              fontSize: 10,
-              color: Colors.grey[600],
-            ),
-          ),
-          const Divider(height: 24, thickness: 1),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '${order.items.length} Items',
-                style: const TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Text(
-                'Rp ${order.total.toStringAsFixed(0)}',
-                style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: oliveDark,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Identical Bottom Navigation from your Menu Screen
   Widget _buildBottomNav(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
@@ -195,7 +106,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 _navItem(Icons.coffee_outlined, 'Menu', false, () => Navigator.pop(context)),
                 const SizedBox(width: 64),
                 _navItem(Icons.receipt_long_outlined, 'History', true, () {}),
-                _navItem(Icons.person_outline, 'Profile', false, () {}),
+                _navItem(Icons.person_outline, 'Profile', false, () {
+                   Navigator.pushNamed(context, '/profile');
+                }),
               ],
             ),
             Positioned(
@@ -245,6 +158,208 @@ class _HistoryScreenState extends State<HistoryScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// WIDGET BARU: Kotak Order yang bertindak seperti Dropdown (bisa di-expand)
+// ============================================================================
+class _OrderCard extends StatefulWidget {
+  final OrderRecord order;
+
+  const _OrderCard({Key? key, required this.order}) : super(key: key);
+
+  @override
+  __OrderCardState createState() => __OrderCardState();
+}
+
+class __OrderCardState extends State<_OrderCard> {
+  // Variabel untuk melacak apakah kotak sedang terbuka atau tidak
+  bool _isExpanded = false; 
+
+  final Color olive = const Color(0xFFA3B04A);
+  final Color oliveDark = const Color(0xFF8E9B3A);
+  final Color cardBorder = const Color(0xFFD6C9B8);
+
+  @override
+  Widget build(BuildContext context) {
+    final order = widget.order;
+
+    // Menambahkan format jam ke dalam string tanggal
+    final timeStr = "${order.date.hour.toString().padLeft(2, '0')}:${order.date.minute.toString().padLeft(2, '0')}";
+    final dateStr = "${order.date.year}-${order.date.month.toString().padLeft(2, '0')}-${order.date.day.toString().padLeft(2, '0')} • $timeStr";
+
+    return GestureDetector(
+      onTap: () {
+        // Membalikkan status buka/tutup ketika diklik
+        setState(() {
+          _isExpanded = !_isExpanded;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF7F3EA),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: cardBorder.withOpacity(0.9)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // BAGIAN HEADER KOTAK
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Order #${order.orderId}',
+                  style: const TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF262626),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: olive.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    order.status,
+                    style: TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      color: oliveDark,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              dateStr,
+              style: TextStyle(
+                fontFamily: 'Montserrat',
+                fontSize: 10,
+                color: Colors.grey[600],
+              ),
+            ),
+            const Divider(height: 24, thickness: 1),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${order.items.length} Items',
+                  style: const TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Text(
+                      'Rp ${order.total.toStringAsFixed(0)}',
+                      style: TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: oliveDark,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    // Ikon panah yang berubah arah
+                    Icon(
+                      _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                      color: Colors.grey[600],
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            // BAGIAN ISI DROPDOWN (Muncul hanya jika _isExpanded bernilai true)
+            if (_isExpanded) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: cardBorder.withOpacity(0.5)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: order.items.map((cartItem) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${cartItem.qty}x',
+                            style: const TextStyle(
+                              fontFamily: 'Montserrat',
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  cartItem.item.name,
+                                  style: const TextStyle(
+                                    fontFamily: 'Montserrat',
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${cartItem.iceLevel}, ${cartItem.sugarLevel}, ${cartItem.coffeeStrength}',
+                                  style: TextStyle(
+                                    fontFamily: 'Montserrat',
+                                    fontSize: 9,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            'Rp ${(cartItem.item.price * cartItem.qty).toStringAsFixed(0)}',
+                            style: const TextStyle(
+                              fontFamily: 'Montserrat',
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

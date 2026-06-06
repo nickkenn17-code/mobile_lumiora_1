@@ -510,7 +510,8 @@ class _MenuScreenState extends State<MenuScreen> {
                   );
                 }),
                 _navItem(Icons.person_outline, 'Profile', false, () {
-                  // Profile is not built yet
+                  // Navigate to the Profile screen!
+                  Navigator.pushNamed(context, '/profile');
                 }),
               ],
             ),
