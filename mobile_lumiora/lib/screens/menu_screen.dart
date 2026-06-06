@@ -29,9 +29,9 @@ class _MenuScreenState extends State<MenuScreen> {
 
   final Map<String, GlobalKey> sectionKeys = {
     'Special Bundle': GlobalKey(),
-    'latte_series': GlobalKey(), // API Key
-    'classics': GlobalKey(),     // API Key
-    'non_coffee': GlobalKey(),   // API Key
+    'Latte Series': GlobalKey(),
+    'Classics Coffee': GlobalKey(),
+    'Non-Coffee': GlobalKey(),
     'Bundling Duo': GlobalKey(),
     'Bundling Trio': GlobalKey(),
     'Pastry & Bakery': GlobalKey(),
@@ -51,9 +51,9 @@ class _MenuScreenState extends State<MenuScreen> {
 
   final List<String> categoryTargets = [
     'Special Bundle',
-    'latte_series', // API Key
-    'classics',     // API Key
-    'non_coffee',   // API Key
+    'Latte Series',
+    'Classics Coffee',
+    'Non-Coffee',
     'Bundling Duo',
     'Bundling Trio',
     'Pastry & Bakery',
@@ -300,11 +300,11 @@ class _MenuScreenState extends State<MenuScreen> {
                           children: [
                             ..._buildSection('Special Bundle', 'Special Bundle'),
                             const SizedBox(height: 10),
-                            ..._buildSection('latte_series', 'Latte Series'),
+                            ..._buildSection('Latte Series', 'Latte Series'),
                             const SizedBox(height: 10),
-                            ..._buildSection('classics', 'Classics Coffee'),
+                            ..._buildSection('Classics Coffee', 'Classics Coffee'),
                             const SizedBox(height: 10),
-                            ..._buildSection('non_coffee', 'Non-Coffee'),
+                            ..._buildSection('Non-Coffee', 'Non-Coffee'),
                             const SizedBox(height: 10),
                             ..._buildSection('Bundling Duo', 'Bundling Duo'),
                             const SizedBox(height: 10),
