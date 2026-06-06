@@ -17,9 +17,12 @@ class _LoginModalState extends State<LoginModal> {
   bool _loading = false;
   String? _errorMessage;
 
+  // State variable to determine the form mode (Login or Register)
+  bool _isRegisterMode = false;
+
   final Color olive = const Color(0xFFA3B04A);
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleSubmit() async {
     final username = _userController.text.trim();
     final phone = _phoneController.text.trim();
     final password = _passController.text;
@@ -34,19 +37,43 @@ class _LoginModalState extends State<LoginModal> {
       _errorMessage = null;
     });
 
-    final authService = AuthService();
-    final success = await authService.login(username, phone, password);
+    if (_isRegisterMode) {
+      // ==========================================
+      // REGISTER SCENARIO
+      // ==========================================
+      // Simulate a short loading delay for registration
+      await Future.delayed(const Duration(seconds: 1));
+      
+      if (!mounted) return;
 
-    if (!mounted) return;
+      // Show success notification
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Registration successful! Please login.')),
+      );
 
-    if (success) {
-      Navigator.pop(context);
-      widget.onLoginSuccess();
-    } else {
+      // Automatically return to login mode after successful registration
       setState(() {
-        _errorMessage = 'Invalid credentials';
+        _isRegisterMode = false;
         _loading = false;
       });
+    } else {
+      // ==========================================
+      // LOGIN SCENARIO
+      // ==========================================
+      final authService = AuthService();
+      final success = await authService.login(username, phone, password);
+
+      if (!mounted) return;
+
+      if (success) {
+        Navigator.pop(context);
+        widget.onLoginSuccess();
+      } else {
+        setState(() {
+          _errorMessage = 'Invalid credentials';
+          _loading = false;
+        });
+      }
     }
   }
 
@@ -66,7 +93,11 @@ class _LoginModalState extends State<LoginModal> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Sign In to Continue', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF202020))),
+            // Title changes dynamically based on the mode
+            Text(
+              _isRegisterMode ? 'Create New Account' : 'Sign In to Continue', 
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF202020)),
+            ),
             const SizedBox(height: 16),
             if (_errorMessage != null)
               Container(
@@ -105,16 +136,46 @@ class _LoginModalState extends State<LoginModal> {
                   backgroundColor: olive,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                onPressed: _loading ? null : _handleLogin,
+                onPressed: _loading ? null : _handleSubmit,
+                // Main button text changes dynamically
                 child: _loading
                     ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : const Text('LOGIN', style: TextStyle(color: Colors.white)),
+                    : Text(_isRegisterMode ? 'REGISTER' : 'LOGIN', style: const TextStyle(color: Colors.white)),
               ),
             ),
             const SizedBox(height: 12),
             TextButton(
               onPressed: _loading ? null : () => Navigator.pop(context),
               child: const Text('Cancel'),
+            ),
+            const SizedBox(height: 8),
+            // Switch button at the bottom to toggle form mode
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  _isRegisterMode ? "Already have an account? " : "Don't have an account? ",
+                  style: const TextStyle(color: Colors.black54),
+                ),
+                GestureDetector(
+                  onTap: _loading 
+                      ? null 
+                      : () {
+                          setState(() {
+                            _isRegisterMode = !_isRegisterMode;
+                            // Reset error message when switching modes
+                            _errorMessage = null; 
+                          });
+                        },
+                  child: Text(
+                    _isRegisterMode ? "Login" : "Register",
+                    style: TextStyle(
+                      color: olive,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

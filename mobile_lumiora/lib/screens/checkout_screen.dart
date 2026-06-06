@@ -263,7 +263,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         _buildSectionTitle('Order Summary'),
         ..._itemsToCheckout.map((item) {
           return Dismissible(
-            key: Key('${item.item.id}_${item.qty}_${DateTime.now().millisecondsSinceEpoch}'),
+            // FIX 1: Make the key truly unique by combining ID and its customizations
+            // This guarantees uniqueness because CartService merges identical customizations
+            key: Key('${item.item.id}_${item.iceLevel}_${item.sugarLevel}_${item.coffeeStrength}'),
             direction: DismissDirection.endToStart,
             onDismissed: (direction) {
               _removeItem(item);
@@ -317,12 +319,25 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ),
                         ),
                         const SizedBox(height: 2),
+                        // FIX 2: Added the item details (Ice, Sugar, Strength) specifically for checkout
+                        Text(
+                          'Ice: ${item.iceLevel} • Sugar: ${item.sugarLevel} • Strength: ${item.coffeeStrength}',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: 'Montserrat',
+                            fontSize: 9,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 4),
                         Text(
                           '${item.qty}x • Rp ${item.item.price.toStringAsFixed(0)}',
                           style: TextStyle(
                             fontFamily: 'Montserrat',
                             fontSize: 11,
-                            color: Colors.grey[700],
+                            color: Colors.grey[800],
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
@@ -345,7 +360,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ],
     );
   }
-
   Widget _buildCustomerNotes() {
     return Container(
       padding: const EdgeInsets.all(12),

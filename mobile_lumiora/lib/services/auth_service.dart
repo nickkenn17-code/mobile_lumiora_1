@@ -22,6 +22,18 @@ class AuthService {
   /// Attempt to log in with username, phone, and password
   Future<bool> login(String username, String phone, String password) async {
     try {
+      // ==========================================
+      // BYPASS LOGIN FOR DEMO
+      // ==========================================
+      // Automatically allow login for this specific user
+      if (username == 'Xeno' && password == '1234') {
+        _username = username;
+        _phone = phone; // Uses the phone number typed in the form
+        _isLoggedIn = true;
+        return true;
+      }
+      // ==========================================
+
       const String apiHost = '35.254.206.12';
       final uri = Uri.parse('http://$apiHost:3000/api/login');
       final resp = await http.post(
