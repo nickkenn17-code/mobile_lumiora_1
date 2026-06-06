@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-5 text-center">
+    <div class="col-12">
+        <h2 style="font-family: 'league-spartan', sans-serif; color: var(--espresso);">Welcome to the Cafe, Manager.</h2>
+        <!-- <p style="font-size: 1.1rem; color: var(--olive-dark);">Everything you need to keep operations flowing smoothly.</p> -->
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card h-100 p-4 text-center">
+            <h4 class="fw-bold mb-3">Live Operations</h4>
+            <p style="color: #666; font-size: 0.95rem;">Jump into the active KDS to clear tickets for Coffee, Pastry, and Kitchen.</p>
+            <div class="mt-auto">
+                <a href="/kitchen/" class="btn btn-primary-lumiora w-100">Open Kitchen Display</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 p-4 text-center">
+            <h4 class="fw-bold mb-3">Menu Management</h4>
+            <p style="color: #666; font-size: 0.95rem;">Update mobile app items, change availability, and adjust pricing instantly.</p>
+            <div class="mt-auto d-flex gap-2">
+                <a href="/admin/app/menuitem/add/" class="btn btn-primary-lumiora w-50">+ Add</a>
+                <a href="/admin/app/menuitem/" class="btn btn-outline-lumiora w-50">Edit</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 p-4 text-center" style="background-color: #EFEFEF;">
+            <h4 class="fw-bold mb-3" style="color: #888;">Sales Analytics</h4>
+            <p style="color: #999; font-size: 0.95rem;">Daily revenue and hourly volume tracking.</p>
+            <div class="mt-auto">
+                <button class="btn btn-secondary w-100" disabled style="border-radius: 8px;">Pending Data Pipeline</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

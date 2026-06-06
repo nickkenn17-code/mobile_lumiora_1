@@ -1,5 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from . import views
 from .views import (
     CategoryViewSet, MenuItemViewSet, BundleViewSet, CustomerViewSet,
     OrderViewSet, CheckoutViewSet, AdminUserViewSet, DashboardViewSet
@@ -17,4 +18,5 @@ router.register(r'dashboard', DashboardViewSet, basename='dashboard')
 
 urlpatterns = [
     path('', include(router.urls)),
+    # Notice the kitchen route is completely gone from here!
 ]

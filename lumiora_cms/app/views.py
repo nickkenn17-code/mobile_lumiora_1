@@ -1,6 +1,8 @@
+from requests import request
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.db.models import Sum, Count, Q
 from .models import (
@@ -202,3 +204,11 @@ class DashboardViewSet(viewsets.ViewSet):
         customers = Customer.objects.order_by('-total_spent')[:5]
         serializer = CustomerSerializer(customers, many=True)
         return Response(serializer.data)
+    
+    
+def kitchen_display(request):
+    return render(request, 'orders.html')
+
+def cms_dashboard(request):
+    """Renders the custom Lumiora manager dashboard"""
+    return render(request, 'cms_home.html')
