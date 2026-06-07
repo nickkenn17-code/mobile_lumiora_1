@@ -10,4 +10,6 @@ urlpatterns = [
     path('kitchen/', views.kitchen_display, name='kitchen_display'), 
     
     path('cms/', views.cms_dashboard, name='cms_dashboard'),
+    
+    path('trigger-pipeline/', views.trigger_pipeline, name='trigger_pipeline'),
 ]

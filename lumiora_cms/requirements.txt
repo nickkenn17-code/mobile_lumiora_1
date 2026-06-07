@@ -7,3 +7,6 @@ gunicorn==21.2.0
 pillow==12.2.0
 psycopg2-binary
 wheel
+sqlalchemy
+psycopg2-binary
+pandas

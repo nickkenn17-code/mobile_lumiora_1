@@ -60,3 +60,8 @@ class AdminUserAdmin(admin.ModelAdmin):
     list_display = ('user', 'role', 'is_active')
     list_filter = ('role', 'is_active')
     search_fields = ('user__username', 'user__email')
+
+@admin.register(MenuItem) # If MenuItem is already there, skip this
+class PipelineReportAdmin(admin.ModelAdmin):
+    list_display = ('name',) # Or whatever fields you want to see
+    

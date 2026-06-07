@@ -1,9 +1,11 @@
+import subprocess
 from requests import request
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import render
 from django.contrib.auth.models import User
+from django.db import connection
 from django.db.models import Sum, Count, Q
 from .models import (
     Category, MenuItem, Bundle, Customer, Order, Checkout, AdminUser
@@ -256,3 +258,17 @@ def kitchen_display(request):
 def cms_dashboard(request):
     """Renders the custom Lumiora manager dashboard"""
     return render(request, 'cms_home.html')
+
+def pipeline_results(request):
+    # This queries the table the pipeline created
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM report_daily_sales ORDER BY order_date DESC")
+        columns = [col[0] for col in cursor.description]
+        data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+    
+    return render(request, 'pipeline_view.html', {'reports': data})
+
+def trigger_pipeline(request):
+    # This runs the pipeline script whenever the URL is visited
+    subprocess.run(["python", "/app/pipeline.py"])
+    return HttpResponse("Pipeline ran successfully!")
