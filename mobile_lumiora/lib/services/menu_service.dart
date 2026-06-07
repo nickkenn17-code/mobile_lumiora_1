@@ -12,33 +12,31 @@ class MenuService {
       final response = await http.get(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {
-        // 1. Decode the response into a dynamic variable
+        // The API returns a direct JSON array, so decode it
         final dynamic decodedResponse = json.decode(response.body);
         
         List<dynamic> jsonList;
 
-        // 2. Check the structure: is it a Map (Object) or a List (Array)?
-        if (decodedResponse is Map<String, dynamic>) {
-          // If it is a Map, extract the array hiding inside the 'data' key
+        // Handle both array and object responses
+        if (decodedResponse is List) {
+          // If it's already a list, use it directly
+          jsonList = decodedResponse;
+        } else if (decodedResponse is Map<String, dynamic>) {
+          // If it's an object, try to extract the array from common keys
           jsonList = decodedResponse['data'] ?? 
                      decodedResponse['items'] ?? 
                      decodedResponse['menu'] ?? 
                      [];
-        } else if (decodedResponse is List) {
-          // If it's already a raw list, use it directly
-          jsonList = decodedResponse;
         } else {
           throw Exception('Unexpected JSON format');
         }
 
-        // 3. Map the extracted list into your Dart objects
+        // Map the extracted list into MenuItem objects
         return jsonList.map((data) => MenuItem.fromJson(data)).toList();
       } else {
-        // If the server connects but throws an error (like a 404 or 500)
         throw Exception('Server error: ${response.statusCode}');
       }
     } catch (e) {
-      // If the app cannot reach the server at all, throw an error to the UI
       throw Exception('Failed to connect to the database API: $e');
     }
   }
