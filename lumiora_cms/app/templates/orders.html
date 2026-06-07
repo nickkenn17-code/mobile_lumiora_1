@@ -91,21 +91,62 @@
 
     <div id="coffee" class="tab-content active">
         <h3>Coffee Bar</h3>
-        <div class="order-card">
-            <strong>Order #104</strong> <br>
-            2x Iced Caramel Macchiato <br>
-            <button class="btn-complete" onclick="selesaikanPesanan(this)">Mark Complete</button>
-        </div>
+        {% if coffee_orders %}
+            {% for entry in coffee_orders %}
+            <div class="order-card">
+                <strong>Order #{{ entry.order.id }}</strong> ({{ entry.order.customer.first_name }})<br>
+                {% for item in entry.items %}
+                    {{ item.quantity }}x {{ item.menu_item.name }}<br>
+                {% endfor %}
+                {% if entry.order.notes %}
+                    <em style="color: #666;">Notes: {{ entry.order.notes }}</em><br>
+                {% endif %}
+                <button class="btn-complete" onclick="selesaikanPesanan(this)">Mark Complete</button>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No active orders.</p>
+        {% endif %}
     </div>
 
     <div id="pastry" class="tab-content">
         <h3>Pastry</h3>
-        <p>No active orders.</p>
+        {% if pastry_orders %}
+            {% for entry in pastry_orders %}
+            <div class="order-card">
+                <strong>Order #{{ entry.order.id }}</strong> ({{ entry.order.customer.first_name }})<br>
+                {% for item in entry.items %}
+                    {{ item.quantity }}x {{ item.menu_item.name }}<br>
+                {% endfor %}
+                {% if entry.order.notes %}
+                    <em style="color: #666;">Notes: {{ entry.order.notes }}</em><br>
+                {% endif %}
+                <button class="btn-complete" onclick="selesaikanPesanan(this)">Mark Complete</button>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No active orders.</p>
+        {% endif %}
     </div>
 
     <div id="kitchen" class="tab-content">
         <h3>Hot Kitchen</h3>
-        <p>No active orders.</p>
+        {% if kitchen_orders %}
+            {% for entry in kitchen_orders %}
+            <div class="order-card">
+                <strong>Order #{{ entry.order.id }}</strong> ({{ entry.order.customer.first_name }})<br>
+                {% for item in entry.items %}
+                    {{ item.quantity }}x {{ item.menu_item.name }}<br>
+                {% endfor %}
+                {% if entry.order.notes %}
+                    <em style="color: #666;">Notes: {{ entry.order.notes }}</em><br>
+                {% endif %}
+                <button class="btn-complete" onclick="selesaikanPesanan(this)">Mark Complete</button>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No active orders.</p>
+        {% endif %}
     </div>
 
     <script>

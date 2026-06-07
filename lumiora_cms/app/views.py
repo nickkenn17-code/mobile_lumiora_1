@@ -207,7 +207,51 @@ class DashboardViewSet(viewsets.ViewSet):
     
     
 def kitchen_display(request):
-    return render(request, 'orders.html')
+    # Get all active orders (not completed or cancelled)
+    active_orders = Order.objects.filter(status__in=['pending', 'confirmed', 'preparing', 'ready']).order_by('created_at')
+    
+    # We will organize items into these three categories for the template
+    coffee_orders = []
+    pastry_orders = []
+    kitchen_orders = []
+
+    for order in active_orders:
+        order_items = order.items.select_related('menu_item', 'menu_item__category').all()
+        
+        c_items = []
+        p_items = []
+        k_items = []
+
+        for item in order_items:
+            cat_name = item.menu_item.category.name.lower()
+            
+            # Categorize based on the category name
+            # You can adjust these string matches based on your actual database categories
+            if 'pastry' in cat_name or 'bread' in cat_name or 'cake' in cat_name:
+                p_items.append(item)
+            elif 'food' in cat_name or 'kitchen' in cat_name or 'meal' in cat_name:
+                k_items.append(item)
+            else:
+                # Default to coffee/bar for drinks
+                c_items.append(item)
+                
+        # If this order has coffee items, add it to the coffee display
+        if c_items:
+            coffee_orders.append({'order': order, 'items': c_items})
+        # If it has pastry items, add to pastry display
+        if p_items:
+            pastry_orders.append({'order': order, 'items': p_items})
+        # If it has kitchen items, add to kitchen display
+        if k_items:
+            kitchen_orders.append({'order': order, 'items': k_items})
+
+    context = {
+        'coffee_orders': coffee_orders,
+        'pastry_orders': pastry_orders,
+        'kitchen_orders': kitchen_orders,
+    }
+    
+    return render(request, 'orders.html', context)
 
 def cms_dashboard(request):
     """Renders the custom Lumiora manager dashboard"""

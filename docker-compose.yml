@@ -1,0 +1,66 @@
+services:
+  # The Shared PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=lumiora_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - lumiora_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d lumiora_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # The Node.js Backend (for the Mobile App)
+  lumiora-node-backend:
+    build: 
+      context: ./lumiora-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./lumiora-backend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=production
+    networks:
+      - lumiora_network
+
+  # The Django CMS (for the Kitchen/Admin)
+  lumiora-django-cms:
+    build:
+      context: ./lumiora_cms
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./lumiora_cms:/app
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-lumiora-cms-docker-dev-key
+      - DB_NAME=lumiora_db
+      - DB_USER=postgres
+      - DB_PASSWORD=123
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - ALLOWED_HOSTS=localhost,127.0.0.1,web,0.0.0.0,lumiora-django-cms
+    networks:
+      - lumiora_network
+
+volumes:
+  postgres_data:
+
+networks:
+  lumiora_network:
+    driver: bridge

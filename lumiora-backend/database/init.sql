@@ -37,5 +37,23 @@ CREATE TABLE IF NOT EXISTS users (
 
 TRUNCATE TABLE users;
 
--- just dummy data LOL
-INSERT INTO users (username, password, phone) VALUES ('user', 'password123', '12345678');
+-- Orders Table
+CREATE TABLE IF NOT EXISTS orders (
+    id SERIAL PRIMARY KEY,
+    customer_email VARCHAR(100),
+    customer_name VARCHAR(100),
+    customer_phone VARCHAR(20),
+    total_amount NUMERIC(10, 2) NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending', -- pending, preparing, ready, completed
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Order Items Table (Linked to orders and menu_items)
+CREATE TABLE IF NOT EXISTS order_items (
+    id SERIAL PRIMARY KEY,
+    order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
+    menu_item_id VARCHAR(10) REFERENCES menu_items(id),
+    quantity INTEGER NOT NULL,
+    price NUMERIC(10, 2) NOT NULL
+);

@@ -11,12 +11,12 @@ app.use(cors());
 app.use(express.json());
 
 // Database Connection Configuration
-// Replace these values with your actual PostgreSQL credentials
+// This connects to the shared database container defined in the root docker-compose.yml
 const pool = new Pool({
-  user: 'postgres',       // Your default PostgreSQL username
-  host: 'postgres',       // Docker service name for the postgres container
-  database: 'lumiora_db', // The name of the database where you ran the SQL script
-  password: '123', // Your PostgreSQL password
+  user: 'postgres',     
+  host: 'postgres',        // The name of the database service in docker-compose
+  database: 'lumiora_db', 
+  password: '123', 
   port: 5432,
 });
 
@@ -24,18 +24,80 @@ app.get('/', (req, res) => {
   res.send('lumiora app API wooooooooooooooooooooooo');
 });
 
-// The API Endpoint
-// When Flutter asks for data, this queries the database and sends JSON back
+// GET Menu - Reads from Django's menu table
 app.get('/api/menu', async (req, res) => {
   try {
     console.log('Fetching menu items...');
-    const result = await pool.query('SELECT * FROM menu_items');
-    
-    // Send the rows back as a JSON array
+    // We are now reading from Django's app_menuitem table
+    const result = await pool.query('SELECT * FROM app_menuitem');
     res.json(result.rows);
   } catch (error) {
     console.error('Error executing query', error.stack);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+/**
+ * POST /api/orders
+ * Receives order from Flutter and saves to Django tables so CMS can see it.
+ */
+app.post('/api/orders', async (req, res) => {
+  const { customer, items, totalAmount, notes } = req.body;
+
+  if (!customer || !items || items.length === 0) {
+    return res.status(400).json({ success: false, message: 'Missing order details' });
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // 1. Get or Create Customer in 'app_customer' table
+    let customerId;
+    const customerRes = await client.query(
+      'SELECT id FROM app_customer WHERE email = $1',
+      [customer.email]
+    );
+
+    if (customerRes.rows.length > 0) {
+      customerId = customerRes.rows[0].id;
+    } else {
+      const newCust = await client.query(
+        `INSERT INTO app_customer 
+        (email, phone, first_name, last_name, is_active, total_orders, total_spent, created_at, updated_at, address, city, postal_code) 
+        VALUES ($1, $2, $3, $4, true, 1, $5, NOW(), NOW(), '', '', '') RETURNING id`,
+        [customer.email, customer.phone, customer.firstName || 'Guest', customer.lastName || '', totalAmount]
+      );
+      customerId = newCust.rows[0].id;
+    }
+
+    // 2. Create the Order in 'app_order' table
+    const orderRes = await client.query(
+      `INSERT INTO app_order (customer_id, status, total_amount, notes, created_at, updated_at) 
+       VALUES ($1, 'pending', $2, $3, NOW(), NOW()) RETURNING id`,
+      [customerId, totalAmount, notes || '']
+    );
+    const orderId = orderRes.rows[0].id;
+
+    // 3. Create Order Items in 'app_orderitem' table
+    for (const item of items) {
+      // NOTE: item.menu_item_id MUST be the integer ID from 'app_menuitem'
+      await client.query(
+        `INSERT INTO app_orderitem (order_id, menu_item_id, quantity, price) 
+         VALUES ($1, $2, $3, $4)`,
+        [orderId, item.menu_item_id, item.qty, item.price]
+      );
+    }
+
+    await client.query('COMMIT');
+    res.status(201).json({ success: true, orderId: orderId });
+
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Order processing error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  } finally {
+    client.release();
   }
 });
 

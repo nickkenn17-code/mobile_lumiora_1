@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/cart_service.dart';
 import '../services/history_service.dart';
+import '../services/order_service.dart';
 import 'history_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -73,20 +74,31 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       _isLoading = true;
     });
 
-    // Simulate backend processing
-    await Future.delayed(const Duration(seconds: 2));
+    // Place the order via API
+    final success = await OrderService.placeOrder(
+      _itemsToCheckout,
+      _getTotal(),
+      _notesController.text,
+    );
 
     if (mounted) {
       setState(() {
         _isLoading = false;
       });
-      // Navigate to QR payment screen and pass the items
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => QRPaymentScreen(purchasedItems: _itemsToCheckout),
-        ),
-      );
+
+      if (success) {
+        // Navigate to QR payment screen and pass the items
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => QRPaymentScreen(purchasedItems: _itemsToCheckout),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to place order. Please try again.')),
+        );
+      }
     }
   }
 

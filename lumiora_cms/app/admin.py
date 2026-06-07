@@ -42,6 +42,12 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = (OrderItemInline,)
 
 
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ('order', 'menu_item', 'quantity', 'price')
+    list_filter = ('order',)
+    search_fields = ('order__id', 'menu_item__name')
+
 @admin.register(Checkout)
 class CheckoutAdmin(admin.ModelAdmin):
     list_display = ('id', 'order', 'amount', 'payment_status', 'payment_method')
