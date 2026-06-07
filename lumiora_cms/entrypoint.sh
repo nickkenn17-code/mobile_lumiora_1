@@ -5,6 +5,9 @@ echo "Running migrations..."
 python manage.py makemigrations
 python manage.py migrate
 
+echo "Seeding initial data..."
+python seed_data.py
+
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
