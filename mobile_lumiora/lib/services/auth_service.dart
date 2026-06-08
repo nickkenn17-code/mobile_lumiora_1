@@ -5,6 +5,12 @@ import 'package:flutter/foundation.dart';
 class AuthService {
   static final AuthService _instance = AuthService._internal();
 
+  static const Map<String, String> _demoCredentials = {
+    'Xeno': '1234',
+    'Kenny': '4321',
+    'JJ': '1234',
+  };
+
   factory AuthService() {
     return _instance;
   }
@@ -25,8 +31,8 @@ class AuthService {
       // ==========================================
       // BYPASS LOGIN FOR DEMO
       // ==========================================
-      // Automatically allow login for this specific user
-      if (username == 'Xeno' && password == '1234') {
+      // Automatically allow login for approved demo users
+      if (_demoCredentials[username] == password) {
         _username = username;
         _phone = phone; // Uses the phone number typed in the form
         _isLoggedIn = true;
