@@ -5,7 +5,11 @@ import '../models/menu_item.dart';
 class MenuService {
   // Pointing to the deployed cloud backend
   //  static const String apiUrl = 'http://43.133.144.212:1234/api/menu'; this is the old one thatc onnects to mr ones api
+<<<<<<< HEAD
+  static const String apiUrl = 'http://localhost:3000/api/menu';
+=======
   static const String apiUrl = 'http://35.231.52.200:3000/api/menu';
+>>>>>>> b6bad7f5cb3e13185474a83bb55ce06c97ee279c
 
   static Future<List<MenuItem>> fetchMenuItems() async {
     try {

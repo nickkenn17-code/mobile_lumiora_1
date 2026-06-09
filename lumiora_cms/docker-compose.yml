@@ -12,7 +12,11 @@ services:
       - DB_PASSWORD=lumiora_secure_password_123
       - DB_HOST=db
       - DB_PORT=5432
+<<<<<<< HEAD
+      - ALLOWED_HOSTS=localhost,127.0.0.1,web,0.0.0.0,localhost
+=======
       - ALLOWED_HOSTS=localhost,127.0.0.1,web,0.0.0.0,35.231.52.200
+>>>>>>> b6bad7f5cb3e13185474a83bb55ce06c97ee279c
     depends_on:
       db:
         condition: service_healthy

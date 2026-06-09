@@ -58,18 +58,7 @@ services:
       - DB_PASSWORD=123
       - DB_HOST=postgres
       - DB_PORT=5432
-      - ALLOWED_HOSTS=localhost,127.0.0.1,web,0.0.0.0,lumiora-django-cms,35.231.52.200
-    networks:
-      - lumiora_network
-
-# Your New Dedicated Data Pipeline Worker
-  lumiora-data-pipeline:
-    build: 
-      context: ./data_pipeline
-    restart: always
-    depends_on:
-      postgres:
-        condition: service_healthy
+      - ALLOWED_HOSTS=localhost,127.0.0.1,web,0.0.0.0,lumiora-django-cms
     networks:
       - lumiora_network
       
