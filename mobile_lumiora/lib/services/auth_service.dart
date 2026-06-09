@@ -40,7 +40,7 @@ class AuthService {
       }
       // ==========================================
 
-      const String apiHost = '35.254.206.12';
+      const String apiHost = '35.231.52.200';
       final uri = Uri.parse('http://$apiHost:3000/api/login');
       final resp = await http.post(
         uri,

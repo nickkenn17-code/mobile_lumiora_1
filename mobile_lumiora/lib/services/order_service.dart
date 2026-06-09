@@ -5,7 +5,7 @@ import 'cart_service.dart';
 
 class OrderService {
   // Pointing to your cloud VM Node.js backend
-  static const String apiUrl = 'http://35.254.206.12:3000/api/orders';
+  static const String apiUrl = 'http://35.231.52.200:3000/api/orders';
 
   static Future<bool> placeOrder(List<CartItem> items, double totalAmount, String notes) async {
     try {

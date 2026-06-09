@@ -58,7 +58,7 @@ services:
       - DB_PASSWORD=123
       - DB_HOST=postgres
       - DB_PORT=5432
-      - ALLOWED_HOSTS=localhost,127.0.0.1,web,0.0.0.0,lumiora-django-cms,35.254.206.12
+      - ALLOWED_HOSTS=localhost,127.0.0.1,web,0.0.0.0,lumiora-django-cms,35.231.52.200
     networks:
       - lumiora_network
 
